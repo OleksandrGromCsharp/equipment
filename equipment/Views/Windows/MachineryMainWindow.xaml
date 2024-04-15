@@ -1,0 +1,336 @@
+﻿<Window x:Class="equipment.Views.Windows.MachineryMainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" mc:Ignorable="d"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:command="clr-namespace:equipment.Infrastructure.Commands"
+        xmlns:viewmodel="clr-namespace:equipment.ViewModels"
+        xmlns:converter="clr-namespace:equipment.Infrastructure.Converter"
+        d:DataContext="{d:DesignInstance viewmodel:MachineryViewModel}"
+        
+        Height="441"
+        Width="600"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Title="{Binding Title}">
+    
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0"
+                      CornerRadius="2"
+                      GlassFrameThickness="1"/>
+    </WindowChrome.WindowChrome>
+    <Window.Resources>
+        <converter:EnumToCollectionConverter x:Key="EnumToCollection"/>
+        <converter:DeletingDefaultValuesInt32Converter x:Key="DefaultValueNumberToString"/>
+        <converter:BoolToVisibleConverter x:Key="BoolToVisible"/>
+        <converter:DecimalToCostConverter x:Key="DecimalToCost"/>
+        <Style TargetType="TextBox">
+            <Setter Property="BorderBrush" Value="Blue"/>
+            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+            <Setter Property="Background" Value="GhostWhite"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="FontStyle" Value="Normal"/>
+        </Style>
+        <Style TargetType="GroupBox">
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontStyle" Value="Oblique"/>
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="FontStyle" Value="Normal"/>
+        </Style>
+        <Style TargetType="ListView">
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="FontStyle" Value="Normal"/>
+        </Style>
+        <Style TargetType="DatePicker">
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="FontStyle" Value="Normal"/>
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="FontStyle" Value="Normal"/>
+        </Style>
+        <Style TargetType="TextBlock">
+            <Setter Property="Margin" Value="5"/>
+        </Style>
+        <Style TargetType="TextBlock" x:Key="HeaderTextBlock">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="FontStyle" Value="Oblique"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="TextBlock" x:Key="OpenLinkDocTextBlock">
+            <Setter Property="Margin" Value="2,0"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="FontStyle" Value="Normal"/>
+        </Style>
+        <Style TargetType="TabItem">
+            <Setter Property="HeaderTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" Margin="5,2" Style="{StaticResource HeaderTextBlock}"/>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TabItem}">
+                        <Border x:Name="HeaderBorder"
+                        BorderBrush="Transparent"
+                        BorderThickness="0,0,0,2"
+                        Margin="5,0">
+                            <ContentPresenter x:Name="TabItemContent" ContentSource="Header" HorizontalAlignment="Center" Margin="5,4" RecognizesAccessKey="True"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="TabItemContent" Property="TextElement.FontWeight" Value="Bold"/>
+                                <Setter TargetName="HeaderBorder" Property="BorderBrush" Value="Blue"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="Button" x:Key="OpenLinkDoc">
+            <Setter Property="DockPanel.Dock" Value="Right"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="ContentTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock FontFamily="Segoe MDL2 Assets"
+                                       FontSize="14" Text="&#xE8A1;"
+                                       Background="Transparent"
+                                       Foreground="Black"
+                                       FontStyle="Normal"
+                                       FontWeight="Normal"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="Border" x:Key="ViewDocument">
+            <Setter Property="BorderBrush" Value="Blue"/>
+            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+            <Setter Property="Margin" Value="0,10,0,0"/>
+        </Style>
+        <Style TargetType="CheckBox" x:Key="CheckDocumentsEquipment">
+            <Setter Property="BorderBrush" Value="Silver"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="RadioButton">
+            <Setter Property="Margin" Value="5,7,10,6"/>
+            <Setter Property="FontStyle" Value="Normal"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+        </Style>
+    </Window.Resources>
+    <DockPanel LastChildFill="True">
+        <!--#region Заголовок-->
+        <Border DockPanel.Dock="Top"
+                BorderThickness="0,4,0,0"
+                BorderBrush="#FF037DD1">
+            <WrapPanel>
+                <Border Background="#FF037DD1"
+                        CornerRadius="0,0,5,0">
+                    <TextBlock Padding="10,3,10,7"
+                               Text="{Binding Title}"/>
+                </Border>
+            </WrapPanel>
+        </Border>
+        <!--#endregion-->
+        <DockPanel Margin="5">
+            <!--#region Кнопки ОК CANCEL-->
+            <UniformGrid DockPanel.Dock="Bottom"
+                         Margin="10,10"
+                         Rows="1"
+                         HorizontalAlignment="Right">
+                <Button Content="{Binding TitleButtonOK}"
+                        Padding="35,5"
+                        Margin="10,0"
+                        IsDefault="True"
+                        FontWeight="Bold"
+                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}">
+                    <Button.Command>
+                        <command:CloseDialogWindowCommand DialogResult="True"/>
+                    </Button.Command>
+                </Button>
+                <Button Content="{Binding TitleButtonCancel}"
+                        Padding="35,5"
+                        Margin="10,0"
+                        IsCancel="True"
+                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}">
+                    <Button.Command>
+                        <command:CloseDialogWindowCommand DialogResult="False"/>
+                    </Button.Command>
+                </Button>
+            </UniformGrid>
+            <!--#endregion-->
+            <TabControl BorderBrush="Transparent">
+                <!--#region Загальні дані-->
+                <TabItem Header="{Binding TitleGeneralData}" Width="146">
+                    <StackPanel Orientation="Vertical">
+                        <GroupBox Header="{Binding TitleTypeMechinery}">
+                            <ComboBox Margin="5"
+                                      ItemsSource="{Binding Path=SelectedTypeEquipment, Converter={StaticResource EnumToCollection}, Mode=OneWay}"
+                                      SelectedValuePath="Value"
+                                      DisplayMemberPath="Description"
+                                      SelectedValue="{Binding Equipment.TypeChild, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        </GroupBox>
+                        <GroupBox Header="{Binding TitleProducingCountryData}">
+                            <ComboBox Margin="5"
+                                      IsEditable="True"
+                                      AllowDrop="True"
+                                      ItemsSource="{Binding Path=SelectedProducingCountry, Converter={StaticResource EnumToCollection}, Mode=OneWay}"
+                                      SelectedValuePath="Value"
+                                      DisplayMemberPath="Description"
+                                      SelectedValue="{Binding Equipment.ProducingCountry, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        </GroupBox>
+                        <DockPanel LastChildFill="True">
+                            <GroupBox Header="{Binding TitleTrademarkData}" Margin="0,0,4,0">
+                                <TextBox Text="{Binding Equipment.Trademark, Mode=TwoWay}"/>
+                            </GroupBox>
+                            <GroupBox Header="{Binding TitleModelData}">
+                                <TextBox Text="{Binding Equipment.Model, Mode=TwoWay}"/>
+                            </GroupBox>
+                        </DockPanel>
+                        <DockPanel>
+                            <GroupBox Header="{Binding TitleFactoryNumberData}" Width="290">
+                                <TextBox Text="{Binding Equipment.FactoryNumber, Mode=TwoWay}"/>
+                            </GroupBox>
+                            <GroupBox Header="{Binding TitleNumberEquipmentData}">
+                                <TextBox Text="{Binding Equipment.Number, Mode=TwoWay}" IsReadOnly="True"/>
+                            </GroupBox>
+                        </DockPanel>
+                        <GroupBox Header="{Binding TitleInformationDocumentData}">
+                            <StackPanel>
+                                <Border Style="{StaticResource ViewDocument}">
+                                    <DockPanel LastChildFill="True">
+                                        <Button x:Name="OpenLinkPassportEquipment"
+                                                Style="{StaticResource OpenLinkDoc}"
+                                                Command="{Binding OpenPassportEquipmentCommand}"
+                                                CommandParameter="{Binding Equipment.PathPassport}"/>
+                                        <CheckBox IsChecked="{Binding Equipment.IsPassport, Mode=TwoWay}" Style="{StaticResource CheckDocumentsEquipment}">
+                                            <TextBlock Text="{Binding TitlePassportData}" Style="{StaticResource OpenLinkDocTextBlock}"/>
+                                        </CheckBox>
+                                    </DockPanel>
+                                </Border>
+                                <Border Style="{StaticResource ViewDocument}">
+                                    <DockPanel LastChildFill="True">
+                                        <Button x:Name="OpenLinkInstructionEquipment"
+                                                Style="{StaticResource OpenLinkDoc}"
+                                                Command="{Binding OpenInstructionEquipmentCommand}"
+                                                CommandParameter="{Binding Equipment.PathInstruction}"/>
+                                        <CheckBox IsChecked="{Binding Equipment.IsInstruction, Mode=TwoWay}" BorderBrush="Silver">
+                                            <TextBlock Text="{Binding TitleInstructionEquipmentData}" Style="{StaticResource OpenLinkDocTextBlock}"/>
+                                        </CheckBox>
+                                    </DockPanel>
+                                </Border>
+                                <Border Style="{StaticResource ViewDocument}">
+                                    <DockPanel LastChildFill="True">
+                                        <Button x:Name="OpenLinkInstructionEquipmentError"
+                                                Style="{StaticResource OpenLinkDoc}"
+                                                Command="{Binding OpenInstructionErrorCommand}"
+                                                CommandParameter="{Binding Equipment.PathInstructionError}"/>
+                                        <CheckBox IsChecked="{Binding Equipment.IsInstructionError, Mode=TwoWay}" BorderBrush="Silver">
+                                            <TextBlock Text="{Binding TitleInstructionErrorData}" Style="{StaticResource OpenLinkDocTextBlock}"/>
+                                        </CheckBox>
+                                    </DockPanel>
+                                </Border>
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </TabItem>
+                <!--#endregion-->
+                <!--#region Облікові дані-->
+                <TabItem Header="{Binding TitleAccountingData}" Width="146">
+                    <StackPanel Margin="0,0,0,0">
+                        <DockPanel LastChildFill="True">
+                            <GroupBox Header="{Binding TitleConditionEquipmentData}" DockPanel.Dock="Left">
+                                <StackPanel>
+                                    <RadioButton Content="{Binding TitleIsNewConditionEquipmentData}" GroupName="Condition" IsChecked="{Binding Equipment.IsNewCondition, Mode=TwoWay}"/>
+                                    <RadioButton Content="{Binding TitleIsNotNewConditionEquipmentData}" GroupName="Condition" IsChecked="{Binding Equipment.IsOldCondition, Mode=TwoWay}"/>
+                                </StackPanel>
+                            </GroupBox>
+                            <StackPanel>
+                                <GroupBox Header="{Binding TitlePurveyorEquipmentData}">
+                                    <TextBox Text="{Binding Equipment.Purveyor, Mode=TwoWay}"/>
+                                </GroupBox>
+                                <DockPanel LastChildFill="True">
+                                    <GroupBox Header="{Binding TitleOperationNumberData}" DockPanel.Dock="Right">
+                                        <TextBox Text="{Binding Equipment.OperationNumber, Mode=TwoWay}"/>
+                                    </GroupBox>
+                                    <GroupBox Header="{Binding TitleInventaryNumberData}">
+                                        <TextBox Text="{Binding Equipment.InventoryNumber, Converter={StaticResource DefaultValueNumberToString}, Mode=TwoWay}"/>
+                                    </GroupBox>
+                                </DockPanel>
+                            </StackPanel>
+                        </DockPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <GroupBox Header="{Binding TitleDateCreateData}" Width="190" Margin="0,0,4,0">
+                                <DatePicker Margin="5" SelectedDate="{Binding Equipment.DateManufacture, StringFormat=dd.mm.yyyy, Mode=TwoWay}"/>
+                            </GroupBox>
+                            <GroupBox Header="{Binding TitleDateDeliveryData}" Width="190">
+                                <DatePicker Margin="5" SelectedDate="{Binding Equipment.DeliveryDate, StringFormat=dd.mm.yyyy, Mode=TwoWay}"/>
+                            </GroupBox>
+                            <GroupBox Header="{Binding TitleDateOperationeData}" Width="200">
+                                <DatePicker Margin="5" SelectedDate="{Binding Equipment.DateOperation, StringFormat=dd.mm.yyyy, Mode=TwoWay}"/>
+                            </GroupBox>
+                        </StackPanel>
+                        <DockPanel LastChildFill="True">
+                            <GroupBox Header="{Binding TitleInitialCostData}" DockPanel.Dock="Left">
+                                <TextBox Text="{Binding Equipment.InitialCost, Converter={StaticResource DecimalToCost}, Mode=TwoWay}"/>
+                            </GroupBox>
+                            <GroupBox Header="{Binding TitleOperatingPermitData}" Margin="4,0,0,0">
+                                <CheckBox IsChecked="{Binding Equipment.IsOperatingPermit, Mode=TwoWay}"
+                                          Content="{Binding TitleIsOperatingPermitData}"
+                                          Margin="5,2,5,1"
+                                          FontStyle="Normal"
+                                          FontWeight="Normal"/>
+                            </GroupBox>
+                        </DockPanel>
+                        <DockPanel LastChildFill="True">
+                            <GroupBox Header="{Binding TitleDateStatusEquipmentData}" Margin="4,0,0,0" DockPanel.Dock="Right">
+                                <DatePicker SelectedDate="{Binding Equipment.DateStatus, StringFormat=dd.mm.yyyy, Mode=TwoWay}" Margin="5"/>
+                            </GroupBox>
+                            <GroupBox Header="{Binding TitleStatusEquipmentData}">
+                                <ComboBox Margin="5"
+                                          ItemsSource="{Binding Path=SelectedStatusEquipment, Converter={StaticResource EnumToCollection}, Mode=OneWay}"
+                                          SelectedValuePath="Value"
+                                          DisplayMemberPath="Description"
+                                          SelectedValue="{Binding Equipment.Status, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            </GroupBox>
+                        </DockPanel>
+
+                        <DockPanel LastChildFill="True">
+                            <GroupBox Header="{Binding TitleLocationApartmentData}" DockPanel.Dock="Right" Margin="4,0,0,0">
+                                <TextBox Text="{Binding Equipment.Apartment, Converter={StaticResource DefaultValueNumberToString}, Mode=TwoWay}" Height="16.96" TextAlignment="Right"/>
+                            </GroupBox>
+                            <GroupBox Header="{Binding TitleLocationUnitData}">
+                                <ComboBox Margin="5"
+                                          ItemsSource="{Binding Path=SelectedLocationUnit, Converter={StaticResource EnumToCollection}, Mode=OneWay}"
+                                          SelectedValuePath="Value"
+                                          DisplayMemberPath="Description"
+                                          SelectedValue="{Binding Equipment.Unit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            </GroupBox>
+                        </DockPanel>
+                    </StackPanel>
+                </TabItem>
+                <!--#endregion-->
+                <!--#region  Характеристики устаткування-->
+                <TabItem Header="{Binding TitlePropertiesData}" Width="146">
+                    
+                </TabItem>
+                <!--#endregion-->
+                <!--#region  Характеристики устаткування-->
+                <TabItem Header="{Binding TitleMetrologyPropertiesData}" Width="146" Visibility="{Binding Equipment.IsMetrologicalData, Converter={StaticResource BoolToVisible}, Mode=OneWay}">
+
+                </TabItem>
+                <!--#endregion-->
+            </TabControl>
+        </DockPanel>
+    </DockPanel>
+</Window>

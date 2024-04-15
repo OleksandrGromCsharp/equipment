@@ -1,0 +1,412 @@
+﻿<Window x:Class="equipment.Views.Windows.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" mc:Ignorable="d"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:entityBase="clr-namespace:equipment.Entities.Base"
+        xmlns:entity="clr-namespace:equipment.Entities"
+        xmlns:command="clr-namespace:equipment.Infrastructure.Commands"
+        xmlns:converter="clr-namespace:equipment.Infrastructure.Converter"
+        xmlns:viewmodel="clr-namespace:equipment.ViewModels"
+        
+        Height="758"
+        Width="1120"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Title="{Binding Title}"
+        FocusManager.FocusedElement="{Binding ElementName=FindText}">
+    <Window.DataContext>
+        <viewmodel:MainViewModel/>
+    </Window.DataContext>
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0"
+                      CornerRadius="2"
+                      GlassFrameThickness="1"/>
+    </WindowChrome.WindowChrome>
+    <Window.Resources>
+        <converter:EnumToCollectionConverter x:Key="EnumToCollection"/>
+        <converter:TransformationToEnumTypeConverter x:Key="EnumToHeader"/>
+        <converter:ColorNameToBrushConverter x:Key="ColorNameToBrush"/>
+        <Style TargetType="Button" x:Key="CloseButtonStyle">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid x:Name="LayoutRoot" Background="Transparent">
+                            <TextBlock x:Name="txt" Text="{TemplateBinding Content}"
+                                       FontSize="22"
+                                       FontFamily="Segoe MDL2 Assets" Padding="10,3,10,7" 
+                                       Foreground="{TemplateBinding Foreground}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="LayoutRoot" Property="Background" Value="red"/>
+                                <Setter TargetName="txt" Property="Foreground" Value="white"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <DockPanel LastChildFill="True">
+        <!--#region Заголовок-->
+        <Border DockPanel.Dock="Top"
+                BorderThickness="0,4,0,0"
+                BorderBrush="#FF037DD1">
+            <StackPanel>
+                <DockPanel LastChildFill="True">
+                    <Border Grid.Column="0"
+                            Background="#FF037DD1"
+                            CornerRadius="0,0,5,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Padding="10,3,0,7"
+                                       FontFamily="Segoe MDL2 Assets"
+                                       FontSize="22"
+                                       Text="&#xE836;"
+                                       Background="Transparent"
+                                       Foreground="#FF211F1F"/>
+                            <TextBlock Padding="10,6,10,7"
+                                       Text="{Binding Title}"/>
+                        </StackPanel>
+                    </Border>
+                    <DockPanel HorizontalAlignment="Right">
+                        <Button Content="&#xE726;"
+                                Style="{StaticResource CloseButtonStyle}"
+                                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}">
+                            <Button.Command>
+                                <command:CloseWindowCommand/>
+                            </Button.Command>
+                        </Button>
+                    </DockPanel>
+                </DockPanel>
+            </StackPanel>
+        </Border>
+        <!--#endregion-->
+        <!--#region Основний блок-->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="460"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="{Binding TitleChooseEquipment}"
+                       FontSize="26"
+                       Grid.Column="0"
+                       Grid.Row="0"
+                       Margin="35,5,5,5"/>
+            <TextBlock Text="{Binding TitleActionsEquipment}"
+                       FontSize="26"
+                       Grid.Column="1"
+                       Grid.Row="0"
+                       Margin="20,5,5,5"/>
+            <DockPanel Grid.Column="0"
+                       Grid.Row="1"
+                       LastChildFill="True">
+                <!--#region Блок пошуку-->
+                <DockPanel DockPanel.Dock="Top"
+                           LastChildFill="True">
+                    <TextBlock Width="119"
+                               DockPanel.Dock="Right"/>
+                    <Border BorderThickness="1"
+                            BorderBrush="Silver"
+                            Margin="17,10,10,10">
+                        <DockPanel LastChildFill="True">
+                            <Button x:Name="FindTextButtom"
+                                    BorderThickness="0"
+                                    Background="Transparent"
+                                    Command="{Binding CleanFindTextCommand}"
+                                    CommandParameter="{Binding FilterText}">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate>
+                                                    <TextBlock FontFamily="Segoe MDL2 Assets"
+                                                               FontSize="15" Text="&#xF13D;"
+                                                               Name="ButtonContentIcon"
+                                                               HorizontalAlignment="Center"
+                                                               VerticalAlignment="Center"
+                                                               Margin="2,0"/>
+                                                    <ControlTemplate.Triggers>
+                                                        <DataTrigger Binding="{Binding ElementName=FindText, Path=Text.Length}" Value="0">
+                                                            <Setter TargetName="ButtonContentIcon" Property="Text" Value="&#xE71E;"/>
+                                                            <Setter TargetName="ButtonContentIcon" Property="FontSize" Value="12"/>
+                                                            <Setter TargetName="ButtonContentIcon" Property="FocusManager.FocusedElement" Value="{Binding ElementName=FindText}"/>
+                                                        </DataTrigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <TextBox x:Name="FindText"
+                                     BorderThickness="0"
+                                     Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"/>
+                        </DockPanel>
+                    </Border>
+                </DockPanel>
+                <!--#endregion-->
+                <!--#region Блок представлення бази обладнання-->
+                <DockPanel>
+                    <ListBox Margin="17,15"
+                             BorderThickness="0"
+                             AlternationCount="2"
+                             ItemsSource="{Binding EquipmentCollectionView}"
+                             SelectedItem="{Binding SelectEquipmentEntity}"
+                             IsSynchronizedWithCurrentItem="False">
+                        <ListBox.GroupStyle>
+                            <GroupStyle>
+                                <GroupStyle.ContainerStyle>
+                                    <Style TargetType="{x:Type GroupItem}">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type GroupItem}">
+                                                    <TreeViewItem IsExpanded="True"
+                                                              Header="{Binding Name, Converter={StaticResource EnumToHeader}, Mode=OneWay}">
+                                                        <ItemsPresenter/>
+                                                    </TreeViewItem>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </GroupStyle.ContainerStyle>
+                            </GroupStyle>
+                        </ListBox.GroupStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <DockPanel Margin="10,3,3,5" LastChildFill="True">
+                                    <TextBlock Margin="0,9,10,9" FontFamily="Segoe MDL2 Assets" FontSize="18" Text="{Binding Icon}" Background="Transparent" Foreground="{Binding IconColorName, Converter={StaticResource ColorNameToBrush}, Mode=OneWay}" DockPanel.Dock="Left"/>
+                                    <StackPanel Margin="7,0">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Background="Transparent" FontSize="16" Margin="2,0,5,0" TextWrapping="Wrap" Width="496">
+                                                <Run Text="{Binding TypeChild, Converter={StaticResource EnumToHeader}, Mode=OneWay}"/>
+                                                <Run Text="{Binding Trademark}"/>
+                                                <Run Text="{Binding Model}"/>
+                                            </TextBlock>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                            <TextBlock Text="інв. №" FontSize="12" Margin="2,0,1,0" Background="Transparent"/>
+                                            <TextBlock Text="{Binding InventoryNumber}" Background="Transparent" FontSize="12"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </DockPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Style.Triggers>
+                                    <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                                        <Setter Property="Background" Value="White"/>
+                                    </Trigger>
+                                    <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                                        <Setter Property="Background" Value="#FFC3EBFB"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                    </ListBox>
+                </DockPanel>
+                <!--#endregion-->
+            </DockPanel>
+            <StackPanel Grid.Column="1" Grid.Row="1">
+                <Button x:Name="CreateMachineryButtom"
+                        Margin="20,10,20,5"
+                        BorderThickness="0"
+                        Background="Transparent"
+                        ToolTip="{Binding ToolTipCreateMachinery}"
+                        Command="{Binding CreateMachineryCommand}">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Margin="20,10"
+                                       FontFamily="Segoe MDL2 Assets"
+                                       FontSize="28"
+                                       Text="&#xF8B0;"
+                                       Background="Transparent" Foreground="#FF88080E"/>
+                            <StackPanel>
+                                <TextBlock Text="{Binding TitleCreateMachinery}"
+                                           Background="Transparent"
+                                           FontSize="16"
+                                           Margin="0,2,0,5"
+                                           Width="350"/>
+                                <TextBlock Text="{Binding ToolTipCreateMachinery}"
+                                           Background="Transparent"
+                                           FontSize="12"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+                <Button x:Name="CreateComputerButtom"
+                        Margin="20,10,20,5"
+                        BorderThickness="0"
+                        Background="Transparent"
+                        ToolTip="{Binding ToolTipCreateComputer}"
+                        Command="{Binding CreateComputerCommand}">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Margin="20,10"
+                                       FontFamily="Segoe MDL2 Assets"
+                                       FontSize="28"
+                                       Text="&#xF71E;"
+                                       Background="Transparent"
+                                       Foreground="#FF127CB3"/>
+                            <StackPanel>
+                                <TextBlock Text="{Binding TitleCreateComputer}"
+                                           Background="Transparent"
+                                           FontSize="16"
+                                           Margin="0,2,0,5"
+                                           Width="350"/>
+                                <TextBlock Text="{Binding ToolTipCreateComputer}"
+                                           Background="Transparent"
+                                           FontSize="12"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+                <Button x:Name="CreateComputerPeripheralsButtom"
+                        Margin="20,10,20,5"
+                        BorderThickness="0"
+                        Background="Transparent"
+                        ToolTip="{Binding ToolTipCreateComputerPeripherals}"
+                        Command="{Binding CreateComputerPeripheralsCommand}">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Margin="20,10"
+                                       FontFamily="Segoe MDL2 Assets"
+                                       FontSize="28"
+                                       Text="&#xEA6C;"
+                                       Background="Transparent"
+                                       Foreground="#FFBF4B08"/>
+                            <StackPanel>
+                                <TextBlock Text="{Binding TitleCreateComputerPeripherals}"
+                                           Background="Transparent"
+                                           FontSize="16"
+                                           Margin="0,2,0,5"
+                                           Width="350"/>
+                                <TextBlock Text="{Binding ToolTipCreateComputerPeripherals}"
+                                           Background="Transparent"
+                                           FontSize="12"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+                <Button x:Name="CreateNetworkEquipmentButtom"
+                        Margin="20,10,20,5"
+                        BorderThickness="0"
+                        Background="Transparent"
+                        ToolTip="{Binding ToolTipCreateNetworkEquipment}"
+                        Command="{Binding CreateNetworkEquipmentCommand}">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Margin="20,10"
+                                       FontFamily="Segoe MDL2 Assets"
+                                       FontSize="28"
+                                       Text="&#xE977;"
+                                       Background="Transparent"
+                                       Foreground="#FF2E8E0D"/>
+                            <StackPanel>
+                                <TextBlock Text="{Binding TitleCreateNetworkEquipment}"
+                                           Background="Transparent"
+                                           FontSize="16"
+                                           Margin="0,2,0,5"
+                                           Width="350"/>
+                                <TextBlock Text="{Binding ToolTipCreateNetworkEquipment}"
+                                           Background="Transparent"
+                                           FontSize="12"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+                <Button x:Name="EditEquipmentButtom"
+                        Margin="20,10,20,5"
+                        BorderThickness="0"
+                        Background="Transparent"
+                        ToolTip="{Binding ToolTipEditEquipment}"
+                        Command="{Binding EditEquipmentsCommand}"
+                        CommandParameter="{Binding SelectEquipmentEntity}">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Margin="20,10"
+                                       FontFamily="Segoe MDL2 Assets"
+                                       FontSize="28"
+                                       Text="&#xE8F7;"
+                                       Background="Transparent"
+                                       Foreground="#FFC89D3D"/>
+                            <StackPanel>
+                                <TextBlock Text="{Binding TitleEditEquipment}"
+                                           Background="Transparent"
+                                           FontSize="16"
+                                           Margin="0,2,0,5"
+                                           Width="350"/>
+                                <TextBlock Text="{Binding ToolTipEditEquipment}"
+                                           Background="Transparent"
+                                           FontSize="12"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+                <Button x:Name="DeleteEquipmentButtom"
+                        Margin="20,10,20,5"
+                        BorderThickness="0"
+                        Background="Transparent"
+                        Command="{Binding DeleteEquipmentCommand}"
+                        CommandParameter="{Binding SelectEquipmentEntity}">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Margin="20,10"
+                                       FontFamily="Segoe MDL2 Assets"
+                                       FontSize="28"
+                                       Text="&#xE74D;"
+                                       Background="Transparent"
+                                       Foreground="#FFB90B03"/>
+                            <StackPanel>
+                                <TextBlock Text="{Binding TitleDeleteEquipment}"
+                                           Background="Transparent"
+                                           FontSize="16"
+                                           Margin="0,2,0,5"
+                                           Width="350"/>
+                                <TextBlock Text="{Binding ToolTipDeleteEquipment}"
+                                           Background="Transparent"
+                                           FontSize="12"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+                <Button x:Name="ProcessingEquipmentButtom"
+                        Margin="20,10,20,5"
+                        BorderThickness="0"
+                        Background="Transparent"
+                        Command="{Binding ProcessingEquipmentCommand}"
+                        CommandParameter="{Binding SelectEquipmentEntity}">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Margin="20,10"
+                                       FontFamily="Segoe MDL2 Assets"
+                                       FontSize="28"
+                                       Text="&#xEADF;"
+                                       Background="Transparent"
+                                       Foreground="#FF201BB0"/>
+                            <StackPanel>
+                                <TextBlock Text="{Binding TitleProcessingEquipment}"
+                                           Background="Transparent"
+                                           FontSize="16"
+                                           Margin="0,2,0,5"
+                                           Width="350"/>
+                                <TextBlock Text="{Binding ToolTipProcessingEquipment}"
+                                           TextWrapping="Wrap"
+                                           Background="Transparent"
+                                           FontSize="12"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+            </StackPanel>
+        </Grid>
+        <!--#endregion-->
+    </DockPanel>
+</Window>
